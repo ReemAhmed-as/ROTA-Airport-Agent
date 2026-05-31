@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROTA Agent — Smart Airport Assistant</title>
+    <meta name="description"
+        content="ROTA Agent — your AI-powered airport navigator for shops, restaurants, cafés and transport.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cairo:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Apply saved theme + font scale BEFORE render to avoid flash -->
+    <script>
+        (function () {
+            const theme = localStorage.getItem('rota-theme');
+            if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+            const font = localStorage.getItem('rota-font') || 'medium';
+            if (font !== 'medium') document.documentElement.setAttribute('data-font', font);
+        })();
+    </script>
+</head>
+
+<body>
+    <div class="chat-container">
+
+        <!-- ── Sidebar ── -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <img src="{{ url_for('static', filename='rota_logo.png') }}" alt="ROTA Agent Logo" class="logo-img">
+                <div class="logo-sub">Smart Terminal Guide</div>
+            </div>
+
+            <!-- Font Scale Control -->
+            <div class="font-scale-ctrl">
+                <span class="font-scale-label"><i class="fa-solid fa-text-height"></i> Size</span>
+                <button class="font-scale-btn" data-scale="small" title="Small text">S</button>
+                <button class="font-scale-btn active" data-scale="medium" title="Medium text">M</button>
+                <button class="font-scale-btn" data-scale="large" title="Large text">L</button>
+            </div>
+
+            <!-- Theme Toggle -->
+            <button class="theme-toggle" id="theme-toggle-btn" title="Toggle dark / light mode">
+                <i class="toggle-icon fa-solid fa-sun" id="theme-icon"></i>
+                <span class="toggle-label" id="theme-label">Light Mode</span>
+                <div class="toggle-pill" id="toggle-pill"></div>
+            </button>
+
+            <button id="new-chat-btn">
+                <i class="fa-solid fa-plus"></i> New Chat
+            </button>
+
+            <a href="{{ url_for('show_map') }}" id="map-btn" style="text-decoration:none; text-align:center;">
+                <i class="fa-solid fa-map-location-dot"></i> Open Interactive Map
+            </a>
+
+            <div class="sidebar-tips">
+                <span>Try asking:</span><br>
+                "I need coffee" ☕<br>
+                "أين أقرب مطعم؟" 🍽️<br>
+                "Where can I buy a book?" 📚<br>
+                "Cheapest transport options" 🚗
+            </div>
+        </aside>
+
+        <!-- ── Main Chat ── -->
+        <main class="chat-main">
+            <header class="chat-header">
+                <div class="header-dot"></div>
+                <img src="{{ url_for('static', filename='rota_logo.png') }}" alt="ROTA Agent" class="header-logo-sm">
+                <h1>ROTA AGENT &nbsp;•&nbsp; AIRPORT AI NAVIGATOR</h1>
+            </header>
+
+            <div class="chat-messages" id="chat-messages">
+                <div class="message assistant slide-in">
+                    <div class="avatar"><i class="fa-solid fa-robot"></i></div>
+                    <div class="message-content" dir="rtl">
+                        مرحبًا انا روتا ايجنت مساعدك الذكي في مطار الملك خالد
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-input-container">
+                <div class="input-glass">
+                    <input type="text" id="user-input" placeholder="Ask me anything / اسألني أي شيء..."
+                        autocomplete="off">
+                    <button id="send-btn"><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Theme Toggle + Font Scale Logic -->
+    <script>
+        /* ── Theme ── */
+        const btn = document.getElementById('theme-toggle-btn');
+        const icon = document.getElementById('theme-icon');
+        const label = document.getElementById('theme-label');
+
+        function applyTheme(dark) {
+            if (dark) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.body.setAttribute('data-theme', 'dark');
+                icon.className = 'toggle-icon fa-solid fa-moon';
+                label.textContent = 'Dark Mode';
+                localStorage.setItem('rota-theme', 'dark');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                document.body.removeAttribute('data-theme');
+                icon.className = 'toggle-icon fa-solid fa-sun';
+                label.textContent = 'Light Mode';
+                localStorage.setItem('rota-theme', 'light');
+            }
+        }
+        applyTheme(localStorage.getItem('rota-theme') === 'dark');
+        btn.addEventListener('click', () => {
+            applyTheme(document.body.getAttribute('data-theme') !== 'dark');
+        });
+
+        /* ── Font Scale ── */
+        const fontBtns = document.querySelectorAll('.font-scale-btn');
+
+        function applyFontScale(scale) {
+            if (scale === 'medium') {
+                document.documentElement.removeAttribute('data-font');
+            } else {
+                document.documentElement.setAttribute('data-font', scale);
+            }
+            localStorage.setItem('rota-font', scale);
+            fontBtns.forEach(b => {
+                b.classList.toggle('active', b.dataset.scale === scale);
+            });
+        }
+
+        // Init from saved scale
+        applyFontScale(localStorage.getItem('rota-font') || 'medium');
+
+        fontBtns.forEach(btn => {
+            btn.addEventListener('click', () => applyFontScale(btn.dataset.scale));
+        });
+    </script>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>

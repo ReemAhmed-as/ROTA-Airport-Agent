@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>روتا ايجنت — شاشة البداية</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cairo:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script>
+        // Apply saved theme before render to avoid flash
+        (function () {
+            const theme = localStorage.getItem('rota-theme');
+            if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+        })();
+    </script>
+</head>
+
+<body class="welcome-body">
+    <main class="welcome-screen">
+        <section class="welcome-content" aria-labelledby="welcome-title">
+            <div class="welcome-text">
+                <span class="welcome-kicker">روتا ايجنت</span>
+                <h1 id="welcome-title">مرحبًا بك في مطار الملك خالد الدولي</h1>
+                <p>أنا روتا ايجنت، مساعدك الذكي لرحلة أسهل داخل المطار.</p>
+            </div>
+
+            <button id="start-chat-btn" class="start-chat-btn" type="button" aria-label="ابدأ المحادثة مع روتا ايجنت">
+                <span>ابدأ المحادثة</span>
+                <i class="fa-solid fa-comments"></i>
+            </button>
+        </section>
+    </main>
+
+    <script>
+        // Clear previous chat history whenever the welcome page loads
+        sessionStorage.removeItem('rota_chat_history');
+
+        const chatUrl = "{{ url_for('chat') }}";
+        const resetUrl = "{{ url_for('reset_session') }}";
+        const startChatBtn = document.getElementById('start-chat-btn');
+
+        startChatBtn.addEventListener('click', async function () {
+            startChatBtn.disabled = true;
+
+            try {
+                await fetch(resetUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_id: 'default' })
+                });
+            } catch (err) {
+                console.error(err);
+            } finally {
+                window.location.href = chatUrl;
+            }
+        });
+    </script>
+</body>
+
+</html>

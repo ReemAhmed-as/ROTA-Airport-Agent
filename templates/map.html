@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROTA Agent — Terminal Interactive Map</title>
+    <meta name="description" content="ROTA Agent interactive airport terminal map — find any shop, restaurant or gate.">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Apply saved theme + font scale BEFORE render to avoid flash -->
+    <script>
+        (function () {
+            const theme = localStorage.getItem('rota-theme');
+            if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+            const font  = localStorage.getItem('rota-font') || 'medium';
+            if (font !== 'medium') document.documentElement.setAttribute('data-font', font);
+        })();
+    </script>
+</head>
+<body class="map-page-body">
+    <header class="map-header">
+        <div class="map-header-left">
+            <img src="{{ url_for('static', filename='rota_logo.png') }}"
+                 alt="ROTA Agent Logo" class="map-header-logo">
+            <h1>📍 Terminal Interactive Map</h1>
+        </div>
+
+        <div class="map-header-right">
+            <!-- Font Scale (compact) -->
+            <div class="font-scale-ctrl" style="padding:6px 10px; gap:5px;">
+                <span class="font-scale-label"><i class="fa-solid fa-text-height"></i></span>
+                <button class="font-scale-btn" data-scale="small"  title="Small">S</button>
+                <button class="font-scale-btn active" data-scale="medium" title="Medium">M</button>
+                <button class="font-scale-btn" data-scale="large"  title="Large">L</button>
+            </div>
+
+            <!-- Theme toggle (compact) -->
+            <button class="theme-toggle-map" id="theme-toggle-map" title="Toggle dark / light mode">
+                <i class="fa-solid fa-sun" id="map-theme-icon"></i>
+                <span id="map-theme-label">Light</span>
+                <div class="toggle-pill" id="map-toggle-pill"></div>
+            </button>
+
+            <a href="{{ url_for('chat') }}" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Back to Chat
+            </a>
+        </div>
+    </header>
+
+    <div class="map-filters" id="map-filters">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="gates">Gates</button>
+        <button class="filter-btn" data-filter="food">Food & Beverage</button>
+        <button class="filter-btn" data-filter="retail">Retail</button>
+        <button class="filter-btn" data-filter="services">Services</button>
+    </div>
+
+    <div class="map-container" id="map-container">
+        <canvas id="mapCanvas"></canvas>
+        <div id="tooltip" class="map-tooltip">
+            <div class="title" id="tt-title">Name</div>
+            <div class="cat" id="tt-cat">Category</div>
+        </div>
+        <div class="map-controls">
+            <button class="map-btn" id="zoom-in"    title="Zoom In"><i class="fa-solid fa-plus"></i></button>
+            <button class="map-btn" id="zoom-out"   title="Zoom Out"><i class="fa-solid fa-minus"></i></button>
+            <button class="map-btn" id="reset-view" title="Reset View"><i class="fa-solid fa-expand"></i></button>
+        </div>
+    </div>
+
+    <!-- Theme Toggle + Font Scale Logic -->
+    <script>
+        /* ── Theme ── */
+        const btn   = document.getElementById('theme-toggle-map');
+        const icon  = document.getElementById('map-theme-icon');
+        const label = document.getElementById('map-theme-label');
+
+        function applyTheme(dark) {
+            if (dark) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.body.setAttribute('data-theme', 'dark');
+                icon.className    = 'fa-solid fa-moon';
+                label.textContent = 'Dark';
+                localStorage.setItem('rota-theme', 'dark');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                document.body.removeAttribute('data-theme');
+                icon.className    = 'fa-solid fa-sun';
+                label.textContent = 'Light';
+                localStorage.setItem('rota-theme', 'light');
+            }
+        }
+        applyTheme(localStorage.getItem('rota-theme') === 'dark');
+        btn.addEventListener('click', () => {
+            applyTheme(document.body.getAttribute('data-theme') !== 'dark');
+        });
+
+        /* ── Font Scale ── */
+        const fontBtns = document.querySelectorAll('.font-scale-btn');
+
+        function applyFontScale(scale) {
+            if (scale === 'medium') {
+                document.documentElement.removeAttribute('data-font');
+            } else {
+                document.documentElement.setAttribute('data-font', scale);
+            }
+            localStorage.setItem('rota-font', scale);
+            fontBtns.forEach(b => {
+                b.classList.toggle('active', b.dataset.scale === scale);
+            });
+        }
+        applyFontScale(localStorage.getItem('rota-font') || 'medium');
+        fontBtns.forEach(b => {
+            b.addEventListener('click', () => applyFontScale(b.dataset.scale));
+        });
+    </script>
+
+    <script src="{{ url_for('static', filename='map.js') }}"></script>
+</body>
+</html>
