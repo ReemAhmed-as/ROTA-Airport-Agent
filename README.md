@@ -17,9 +17,13 @@ Rota Agent is a bilingual AI-powered airport navigation chatbot built for King K
 
 **Installation & Setup**
 1. Clone the Repository
-```git clone https://github.com/your-username/rota-agent.git cd rota-agent ```
+```
+git clone https://github.com/your-username/rota-agent.git cd rota-agent
+```
 2. Install Dependencies
-```pip install flask pandas openpyxl requests ```
+```
+pip install flask pandas openpyxl requests
+ ```
 3. Configure API Key
 ```
 Open app.py and replace the OpenRouter API key with your own:
@@ -33,17 +37,21 @@ The app will be available at: http://localhost:8000
 How It Works
 1.	User submits a query in Arabic or English via the chat interface.
 2.	Language Detection — Regex checks for Arabic Unicode characters (\u0600–\u06FF).
-3.	Step 1 — GPT-4o-mini classifies the query into a top-level trade category (e.g., Food & Beverage, Transport).
-4.	Step 2 — GPT-4o-mini narrows the result to a subcategory (e.g., Restaurant, Coffee Shop, Pharmacy).
+3.	Step 1 —GPT-OSS 120B classifies the query into a top-level trade category (e.g., Food & Beverage, Transport).
+4.	Step 2 — GPT-OSS 120B narrows the result to a subcategory (e.g., Restaurant, Coffee Shop, Pharmacy).
 5.	Step 3 — Relevant venues are retrieved from the dataset, ranked by Euclidean distance, and filtered by intent.
 6.	Response — The Flask API returns a JSON payload with venue names, distances, coordinates, and a natural-language message.
 
 API Endpoint
 POST /ask
 Accepts a JSON body and returns navigation results.
+
 Request
+```
 { "message": "أين أقرب مطعم؟" }
+```
 Response
+```
 { "subcategory": "Restaurant",
   "message": "لقد وجدنا أقرب خيار لك...",
   "brands": [
@@ -51,7 +59,7 @@ Response
       "coordinates": "(13, 0)", "x": 13, "y": 0,
       "type": "closest", "price": "$$" }
   ] }
-
+```
 
 Requirements
 1. Python 3.8+
