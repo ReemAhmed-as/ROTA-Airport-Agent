@@ -1,0 +1,17 @@
+Flask==3.0.0
+requests==2.31.0
+pandas==2.2.0
+openpyxl==3.1.2
+python-dotenv==1.0.1
+
+| Layer            | Technology / Tool        | Purpose |
+|------------------|--------------------------|---------|
+| Programming Lang | Python 3.11              | Core backend logic |
+| Web Framework    | Flask                    | API + routing + web server |
+| AI Model         | GPT (OpenRouter API)     | Intent detection & NLP responses |
+| Data Processing  | Pandas                   | Dataset handling (Excel data) |
+| File Handling    | Openpyxl                 | Reading Excel files |
+| HTTP Requests    | Requests                 | API communication with LLM |
+| Frontend         | HTML, CSS, JavaScript    | User interface |
+| Storage (data)   | Excel (.xlsx file)       | Airport locations dataset |
+| Environment      | python-dotenv            | Secure API key management |
